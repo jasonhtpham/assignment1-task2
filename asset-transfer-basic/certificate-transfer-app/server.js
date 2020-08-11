@@ -37,6 +37,24 @@ produceCertId = (firstName, lastName, unitCode) => {
     return certId;
 }
 
+server.get('/getCertByOwner', async (req, res) => {
+    const { firstName, lastName } = req.query;
+
+    const owner = firstName + ' ' + lastName;
+
+    const certs = await hyperledgerApp.GetCertsByOwner(owner);
+
+    res.send(certs);
+})
+
+server.get('/getCertHistory', async (req, res) => {
+    const { certId } = req.query;
+
+    const certHistory = await hyperledgerApp.GetCertHistory(certId);
+
+    res.send(certHistory);
+})
+
 server.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 })

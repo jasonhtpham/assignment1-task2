@@ -17,39 +17,70 @@
             <div class="nav-wrapper">
               <a href="/" class="brand-logo">Hyperledger Certificate</a>
               <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="/">Link</a></li>
-                <li><a href="/">Link</a></li>
-                <li><a href="/">Link</a></li>
+                <li><a class="waves-effect waves-light btn" id="getAllCertsBtn">Get All Certificates</a></li>
               </ul>
             </div>
         </nav>
 
         <div class="container">
-            <h2>Create Certificate</h2>
-            <div class="input-field col s6">
-                <input placeholder="Placeholder" id="firstName" type="text" class="validate">
-                <label for="firstName">First Name</label>
-            </div>
-            <div class="input-field col s6">
-                <input placeholder="Placeholder" id="lastName" type="text" class="validate">
-                <label for="lastName">Last Name</label>
-            </div>
-            <div class="input-field col s6">
-                <input placeholder="Placeholder" id="unitCode" type="text" class="validate">
-                <label for="unitCode">Unit Code</label>
-            </div>
-            <div class="input-field col s6">
-                <input placeholder="Placeholder" id="grade" type="text" class="validate">
-                <label for="grade">Grade</label>
-            </div>
-            <div class="input-field col s6">
-                <input placeholder="Placeholder" id="credit" type="text" class="validate">
-                <label for="credit">Credit Points</label>
+            <div class="create-cert-container">
+                <h3>Create Certificate</h3>
+                <div class="input-field col s6">
+                    <input placeholder="First name" id="firstName" type="text" class="validate">
+                    <label for="firstName">First Name</label>
+                </div>
+                <div class="input-field col s6">
+                    <input placeholder="Last name" id="lastName" type="text" class="validate">
+                    <label for="lastName">Last Name</label>
+                </div>
+                <div class="input-field col s6">
+                    <input placeholder="Unit code (e.g. SIT123, MLA123)" id="unitCode" type="text" class="validate">
+                    <label for="unitCode">Unit Code</label>
+                </div>
+                <div class="input-field col s6">
+                    <input placeholder="Grade (from 1 to 100)" id="grade" type="number" class="validate">
+                    <label for="grade">Grade</label>
+                </div>
+                <div class="input-field col s6">
+                    <input placeholder="Credit point" id="credit" type="text" class="validate">
+                    <label for="credit">Credit Points</label>
+                </div>
+    
+                <button class="btn waves-effect waves-light" type="submit" id="createCertBtn" name="action">
+                    Create Certificate
+                </button>
             </div>
 
-            <button class="btn waves-effect waves-light" type="submit" id="createCertBtn" name="action">
-                Create Certificate
-            </button>
+            <div class="get-certs-by-owner-container">
+                <h3>Get Certificates by Name</h3>
+                <div class="input-field col s6">
+                    <input placeholder="First name" id="firstNameToQuery" type="text" class="validate">
+                    <label for="firstNameToQuery">First Name</label>
+                </div>
+                <div class="input-field col s6">
+                    <input placeholder="Last name" id="lastNameToQuery" type="text" class="validate">
+                    <label for="lastNameToQuery">Last Name</label>
+                </div>
+                <button class="btn waves-effect waves-light" type="submit" id="getCertByOwnerBtn" name="action">
+                    Get Certificates
+                </button>
+                <p class="certs-by-owner-container" id="certs-by-owner"></p>
+            </div>
+
+            <div class="get-cert-history-container">
+                <h3>Get Certificate's History</h3>
+                <div class="input-field col s6">
+                    <input placeholder="Certificate ID" id="certId" type="text" class="validate">
+                    <label for="certId">Certificate ID</label>
+                </div>
+                <button class="btn waves-effect waves-light" type="submit" id="getCertHistoryBtn" name="action">
+                    Get History
+                </button>
+                <p class="cert-history-container" id="cert-history"></p>
+            </div>
+
         </div>
+
+
     </body>
 </html>
