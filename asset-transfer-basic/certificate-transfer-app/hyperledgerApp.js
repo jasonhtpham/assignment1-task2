@@ -15,6 +15,9 @@ const enrollAdmin = require('./enrollAdmin');
 const myChannel = 'mychannel';
 const myChaincodeName = 'updatedcert';
 
+let wallet;
+let contract;
+
 function prettyJSONString(inputString) {
     return JSON.stringify(JSON.parse(inputString), null, 2);
 }
@@ -29,58 +32,80 @@ class HyperledgerApp {
 
     InitLedger = async () => {
         try {
-            // load the network configuration
-            const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
-            const fileExists = fs.existsSync(ccpPath);
-            if (!fileExists) {
-                throw new Error(`no such file or directory: ${ccpPath}`);
-            }
-            const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
-    
-            // Create a new file system based wallet for managing identities.
-            const walletPath = path.join(__dirname, 'wallet');
-            const wallet = await Wallets.newFileSystemWallet(walletPath);
-            console.log(`Wallet path: ${walletPath}`);
-    
-    
-            // Steps:
-            // Note: Steps 1 & 2 need to done only once in an app-server per blockchain network
-            // 1. register & enroll admin user with CA, stores admin identity in local wallet
-            await enrollAdmin.EnrollAdminUser();
-    
-            // 2. register & enroll application user with CA, which is used as client identify to make chaincode calls, stores app user identity in local wallet
-            await registerUser.RegisterAppUser();
-    
-            // Check to see if app user exist in wallet.
-            const identity = await wallet.get(registerUser.ApplicationUserId);
-            if (!identity) {
-                console.log(`An identity for the user does not exist in the wallet: ${registerUser.ApplicationUserId}`);
-                return;
-            }
-    
-            //3. Prepare to call chaincode using fabric javascript node sdk
-            // Create a new gateway for connecting to our peer node.
-            const gateway = new Gateway();
-            await gateway.connect(ccp, {
-                wallet,
-                identity: registerUser.ApplicationUserId,
-                discovery: {enabled: true, asLocalhost: true}
-            });
-            try {
-                // Get the network (channel) our contract is deployed to.
-                const network = await gateway.getNetwork(myChannel);
-    
-                // Get the contract from the network.
-                const contract = network.getContract(myChaincodeName);
-    
-                // Initialize the chaincode by calling its InitLedger function
-                console.log('Submit Transaction: InitLedger to create the very first cert');
-                await contract.submitTransaction('InitLedger');
+            if (!wallet) {
+                // load the network configuration
+                const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
+                const fileExists = fs.existsSync(ccpPath);
+                if (!fileExists) {
+                    throw new Error(`no such file or directory: ${ccpPath}`);
+                }
+                const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        
+                // Create a new file system based wallet for managing identities.
+                const walletPath = path.join(__dirname, 'wallet');
+                wallet = await Wallets.newFileSystemWallet(walletPath);
+                console.log(`Wallet path: ${walletPath}`);
+        
+        
+                // Steps:
+                // Note: Steps 1 & 2 need to done only once in an app-server per blockchain network
+                // 1. register & enroll admin user with CA, stores admin identity in local wallet
+                await enrollAdmin.EnrollAdminUser();
+        
+                // 2. register & enroll application user with CA, which is used as client identify to make chaincode calls, stores app user identity in local wallet
+                await registerUser.RegisterAppUser();
+        
+                // Check to see if app user exist in wallet.
+                const identity = await wallet.get(registerUser.ApplicationUserId);
+                if (!identity) {
+                    console.log(`An identity for the user does not exist in the wallet: ${registerUser.ApplicationUserId}`);
+                    return;
+                }
+        
+                //3. Prepare to call chaincode using fabric javascript node sdk
+                // Create a new gateway for connecting to our peer node.
+                const gateway = new Gateway();
+                await gateway.connect(ccp, {
+                    wallet,
+                    identity: registerUser.ApplicationUserId,
+                    discovery: {enabled: true, asLocalhost: true}
+                });
+                try {
+                    // Get the network (channel) our contract is deployed to.
+                    const network = await gateway.getNetwork(myChannel);
+        
+                    // Get the contract from the network.
+                    contract = network.getContract(myChaincodeName);
+
+                    // Initialize the chaincode by calling its InitLedger function
+                    console.log('Submit Transaction: InitLedger to create the very first cert');
+                    await contract.submitTransaction('InitLedger');
             } catch (err) {
                 console.log(err);
+                }
+            }
+
+            if (wallet) {
+                console.log('Chaincode is ready to be invoked');
             }
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    GetAllCerts = async () => {
+        // Get the certificates stored on ledger
+        let result = await contract.evaluateTransaction('GetAllCerts');
+        // console.log(`\nEvaluate Transaction: GetAllCerts got result: ${prettyJSONString(result.toString())}`)
+        return prettyJSONString(result.toString());
+    }
+
+    CreateCert = async (id, unitCode, grade, owner, credit) => {
+        console.log('Submit Transaction: CreateCert() Create a new certificate');
+        try {
+            await contract.submitTransaction('CreateCert', id, unitCode, grade, owner, credit);
+        } catch (err) {
+            console.log(`Error when create certificate: ${err}`);
         }
     }
 }
