@@ -1,5 +1,20 @@
+// const MongoClient = require('mongodb').MongoClient;
+
+// // Load the database object
+// const uri = "mongodb+srv://dbUser:dbUser@hyperledgercertificate.hgp6r.mongodb.net/firstdb?retryWrites=true&w=majority";
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
 $(document).ready(function() {
     console.log('Document ready')
+
+    setInterval( () => {
+        $.get('/registeredUsers', (users) => {
+            $.each(users, (index, userObj) => {
+                $('.collection').append(`<li> <a href="#" class="collection-item" id=${userObj._id}>${userObj.firstName} ${userObj.lastName}</a> </li>`);
+            });
+        })
+    },1000)
+
 
     $('#getAllCertsBtn').click( () => {
         $.get('/getAllCerts', (certs) => {

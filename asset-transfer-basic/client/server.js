@@ -6,7 +6,7 @@ const PORT = 5000;
 
 
 const uri = "mongodb+srv://dbUser:dbUser@hyperledgercertificate.hgp6r.mongodb.net/firstdb?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true });
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 server.use(express.static(__dirname + '/public'));
 
@@ -24,7 +24,6 @@ server.get('/register', async (req, res) => {
                 phone: phone
             }
         )
-        await client.close();
         res.send(JSON.stringify(collection.ops));
 
     } catch (err) {

@@ -23,5 +23,10 @@ $(document).ready(function() {
                 alert(`${resultString}`);
             }
         })
-    })
+    });
+
+    $('#skipReg').click( () => {
+        alert('Already registered check');
+        window.location.assign('http://localhost:3000/');
+    });
 })

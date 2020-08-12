@@ -1,18 +1,72 @@
 const express = require('express');
-const server = express();
 const HyperledgerApp = require('./hyperledgerApp.js');
 const { IdentityProviderRegistry } = require('fabric-network');
+const MongoClient = require('mongodb').MongoClient;
+const bodyParser = require ('body-parser');
 
+
+// Load the database object
+const uri = "mongodb+srv://dbUser:dbUser@hyperledgercertificate.hgp6r.mongodb.net/firstdb?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Initialize the server object
+const server = express();
 const PORT = 3000;
 
+// Communicate with the chaincode by create a hyperledgerApp object
 const hyperledgerApp = new HyperledgerApp();
 
 server.use(express.static(__dirname + '/public'));
+// bodyParse setup
+server.use(bodyParser.urlencoded({extended: true}));
+server.use(bodyParser.json());
+
+let firstCall = true;
+let lastUpdateEntries = 0;
+
+/*
+    BUG!!!!
+    The client side browser (html + jquery) reloading will cause the list of users to be blank
+
+    Cause:
+    After the first call to the /registeredUsers endpoint, the browser will only receives newly added user (if available)
+*/
+
+server.get('/registeredUsers', async (req, res) => {
+    try {
+        if (firstCall) {
+            await client.connect();
+
+            const users = await client.db("firstdb").collection("Users").find({}).toArray();
+
+            if (!users) {
+                throw new Error ("Nothing found from database");
+            }
+            firstCall = false;
+            lastUpdateEntries = users.length;
+            
+            res.send(users);
+        } else {
+            const newUsers = await client.db("firstdb").collection("Users").find().skip(parseInt(lastUpdateEntries)).toArray();
+            if (newUsers) {
+                lastUpdateEntries += newUsers.length;
+                res.send(newUsers);
+            }
+            res.end()
+        }
+    } catch (err) {
+        console.log(`Problems connecting with database ${err}`);
+    } 
+    // finally {
+    //     await client.close();
+    //     console.log('Database connection closed');
+    // }
+})
 
 server.get('/getAllCerts', async (req, res) => {
     const certs = await hyperledgerApp.GetAllCerts();
     res.send(certs);
-});
+})
 
 server.get('/createCert', async (req, res) => {
     const { firstName, lastName, unitCode, grade, credit } = req.query;
