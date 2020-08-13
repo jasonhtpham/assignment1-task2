@@ -63,6 +63,17 @@ server.get('/registeredUsers', async (req, res) => {
     // }
 })
 
+server.get('/addCert', (req,res) => {
+    const {firstName, lastName} = req.query;
+
+    data = {
+        firstName,
+        lastName
+    }
+
+    res.send(data)
+})
+
 server.get('/getAllCerts', async (req, res) => {
     const certs = await hyperledgerApp.GetAllCerts();
     res.send(certs);

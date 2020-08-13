@@ -10,11 +10,19 @@ $(document).ready(function() {
     setInterval( () => {
         $.get('/registeredUsers', (users) => {
             $.each(users, (index, userObj) => {
-                $('.collection').append(`<li> <a href="#" class="collection-item" id=${userObj._id}>${userObj.firstName} ${userObj.lastName}</a> </li>`);
+                $('.collection').append(`<li> <a href="#userList" onclick="addName(event.target.innerText)" class="collection-item" id=${userObj._id}>${userObj.firstName} ${userObj.lastName}</a> </li>`);
             });
         })
     },1000)
 
+    addName = (name) => {
+        const splittedName = name.split(' ');
+        const firstName = splittedName[0];
+        const lastName = splittedName[1];
+
+        $('#firstName').val(firstName);
+        $('#lastName').val(lastName);
+    }
 
     $('#getAllCertsBtn').click( () => {
         $.get('/getAllCerts', (certs) => {

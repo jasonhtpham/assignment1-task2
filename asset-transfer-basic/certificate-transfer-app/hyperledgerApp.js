@@ -78,8 +78,8 @@ class HyperledgerApp {
                     contract = network.getContract(myChaincodeName);
 
                     // Initialize the chaincode by calling its InitLedger function
-                    console.log('Submit Transaction: InitLedger to create the very first cert');
-                    await contract.submitTransaction('InitLedger');
+                    // console.log('Submit Transaction: InitLedger to create the very first cert');
+                    // await contract.submitTransaction('InitLedger');
             } catch (err) {
                 console.log(err);
                 }
