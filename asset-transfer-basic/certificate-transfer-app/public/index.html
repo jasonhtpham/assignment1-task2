@@ -9,26 +9,30 @@
 
         <!-- Compiled and minified JavaScript -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
         
         <script src="env.js"></script>
     </head>
     <body>
-        <nav>
-            <div class="nav-wrapper">
-              <a href="/" class="brand-logo">Hyperledger Certificate</a>
-              <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a class="waves-effect waves-light btn" id="getAllCertsBtn">Get All Certificates</a></li>
-              </ul>
-            </div>
-        </nav>
-
-        
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper">
+                  <a href="/" class="brand-logo">Hyperledger Certificate</a>
+                  <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a class="waves-effect waves-light btn" id="getAllCertsBtn">Get All Certificates</a></li>
+                  </ul>
+                </div>
+            </nav>
+        </div>
 
         <div class="container">
 
             <div class="user-list-container">
                 <h3>Registered Users</h3>
-                <ul class="collection" id="userList">
+                
+                <ul class="collapsible" id="userList">
                     <!-- Registered Users to be added by jQuery -->
                 </ul>
             </div>
@@ -62,7 +66,7 @@
                 </button>
             </div>
 
-            <div class="get-certs-by-owner-container">
+            <div class="get-certs-by-owner-container" id="get-certs-by-owner-container">
                 <h3>Get Certificates by Name</h3>
                 <div class="input-field col s6">
                     <input placeholder="First name" id="firstNameToQuery" type="text" class="validate">

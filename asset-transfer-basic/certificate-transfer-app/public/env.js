@@ -7,21 +7,62 @@
 $(document).ready(function() {
     console.log('Document ready')
 
+    
+    $('.collapsible').collapsible();
+    
+
     setInterval( () => {
         $.get('/registeredUsers', (users) => {
             $.each(users, (index, userObj) => {
-                $('.collection').append(`<li> <a href="#userList" onclick="addName(event.target.innerText)" class="collection-item" id=${userObj._id}>${userObj.firstName} ${userObj.lastName}</a> </li>`);
+                $('.collapsible').append(
+                    `<li> 
+                        <div class="collapsible-header">${userObj.firstName} ${userObj.lastName}</div>
+                        <div class="collapsible-body">
+                            <a href="#create-cert-container" onclick="addName(event)" name="${userObj.firstName} ${userObj.lastName}" class="waves-effect waves-light btn">
+                                <i class="material-icons left">add</i>Create Certificate
+                            </a>
+                            <a href="#get-certs-by-owner-container" onclick="addName(event)" name="${userObj.firstName} ${userObj.lastName}" class="waves-effect waves-light btn">
+                                <i class="material-icons left">add</i>Get Certificates
+                            </a>
+                        </div>
+                    </li>`);
             });
         })
     },1000)
+/*
+<a href="#userList" onclick="addName(event.target.innerText)" class="collection-item" id=${userObj._id}>
+                        ${userObj.firstName} ${userObj.lastName}
+                        </a>
+*/
+     
 
-    addName = (name) => {
-        const splittedName = name.split(' ');
+    addName = (event) => {
+        const target = event.target.hash;
+
+        const splittedName = event.target.name.split(' ');
         const firstName = splittedName[0];
         const lastName = splittedName[1];
 
-        $('#firstName').val(firstName);
-        $('#lastName').val(lastName);
+        if (target === '#create-cert-container'){
+            $('#firstName').val(firstName);
+            $('#lastName').val(lastName);
+        }
+
+        if (target === '#get-certs-by-owner-container'){
+            $('#firstNameToQuery').val(firstName);
+            $('#lastNameToQuery').val(lastName);
+        }
+    }
+
+    clearValues = () => {
+        $('#firstName').val('');
+        $('#lastName').val('');
+        $('#unitCode').val('');
+        $('#grade').val('');
+        $('#credit').val('');
+        $('#firstNameToQuery').val('');
+        $('#lastNameToQuery').val('');
+        $('#certId').val('');
     }
 
     $('#getAllCertsBtn').click( () => {
@@ -47,11 +88,7 @@ $(document).ready(function() {
 
         $.get('/createCert', data, (certId) => {
             alert(`Certificate with ID ${certId} has been created`);
-            $('#firstName').val('');
-            $('#lastName').val('');
-            $('#unitCode').val('');
-            $('#grade').val('');
-            $('#credit').val('');
+            clearValues();
         })
     });
 
@@ -67,8 +104,7 @@ $(document).ready(function() {
         $.get('/getCertByOwner', data, (certs) => {
             console.log('Certificates are returned successfully!');
             $('#certs-by-owner').html(certs);
-            $('#firstNameToQuery').val('');
-            $('#lastNameToQuery').val('')
+            clearValues();
         })
     });
 
@@ -82,7 +118,7 @@ $(document).ready(function() {
         $.get('/getCertHistory', data, (certHistory) => {
             console.log('Histories are returned successfully!');
             $('#cert-history').html(certHistory);
-            $('#certId').val('');
+            clearValues();
         })
     });
 })

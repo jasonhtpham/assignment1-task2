@@ -16,7 +16,7 @@ class CertificateIssuer extends Contract {
                 ID: 'studentA725',
                 UnitCode: 'SIT725',
                 Grade: 50,
-                Owner: 'studentA',
+                Owner: 'Student A',
                 Credit: 1,
             },
         ];
@@ -103,7 +103,7 @@ class CertificateIssuer extends Contract {
         return ctx.stub.putState(id, Buffer.from(JSON.stringify(cert)));
     }
 
-    // GetCertHistory returns the CoC for a certificate since its issuance
+    // GetCertHistory returns the chain of custody for a certificate since its issuance
     async GetCertHistory(ctx, id) {
         let resultsIterator = await ctx.stub.getHistoryForKey(id);
         let result = await this.GetAllResults(resultsIterator, true);
