@@ -12,6 +12,7 @@
 
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+        <link rel="stylesheet" type="text/css" href="./style.css">
         
         <script src="env.js"></script>
     </head>
@@ -40,30 +41,44 @@
 
             <div class="create-cert-container" id="create-cert-container">
                 <h3>Create Certificate</h3>
-                <div class="input-field col s6">
-                    <input placeholder="First name" id="firstName" type="text" class="validate">
-                    <label for="firstName">First Name</label>
+                <div class="card-panel red lighten-4" id="form-error" style="display: none;">
+                    <span class="red-text text-darken-4">
+                        
+                        <ul class="error-list">
+                            <!-- Errors will be added if any -->
+                        </ul>
+                    </span>
                 </div>
-                <div class="input-field col s6">
-                    <input placeholder="Last name" id="lastName" type="text" class="validate">
-                    <label for="lastName">Last Name</label>
-                </div>
-                <div class="input-field col s6">
-                    <input placeholder="Unit code (e.g. SIT123, MLA123)" id="unitCode" type="text" class="validate">
-                    <label for="unitCode">Unit Code</label>
-                </div>
-                <div class="input-field col s6">
-                    <input placeholder="Grade (from 1 to 100)" id="grade" type="number" class="validate">
-                    <label for="grade">Grade</label>
-                </div>
-                <div class="input-field col s6">
-                    <input placeholder="Credit point" id="credit" type="text" class="validate">
-                    <label for="credit">Credit Points</label>
-                </div>
-    
-                <button class="btn waves-effect waves-light" type="submit" id="createCertBtn" name="action">
-                    Create Certificate
-                </button>
+                <form class="create-cert-form" id="create-cert-form" method="POST" action="/createCert">
+                    <div class="input-field col s6">
+                        <input placeholder="First name" id="firstName" name="createcert-firstName" type="text" class="validate">
+                        <label for="firstName">First Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input placeholder="Last name" id="lastName" name="createcert-lastName" type="text" class="validate">
+                        <label for="lastName">Last Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input placeholder="Unit code (e.g. SIT123, MLA123)" pattern="[A-Za-z]{3}[0-9]{3}" id="unitCode" name="createcert-unitCode" type="text" class="validate" title="6-character Unit Code">
+                        <label for="unitCode">Unit Code</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input placeholder="Grade (from 1 to 100)" id="grade" name="createcert-grade" type="text" class="validate">
+                        <label for="grade">Grade</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input placeholder="Credit point" id="credit" name="createcert-credit" type="text" class="validate">
+                        <label for="credit">Credit Points</label>
+                    </div>
+
+                    <div class="progress" style="display: none;">
+                        <div class="indeterminate"></div>
+                    </div>
+        
+                    <button class="btn waves-effect waves-light" type="submit" id="createCertBtn">
+                        Create Certificate
+                    </button>
+                </form>
             </div>
 
             <div class="get-certs-by-owner-container" id="get-certs-by-owner-container">

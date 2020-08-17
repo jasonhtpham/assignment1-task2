@@ -3,6 +3,9 @@ const HyperledgerApp = require('./hyperledgerApp.js');
 const { IdentityProviderRegistry } = require('fabric-network');
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require ('body-parser');
+const path = require('path');
+const { check, validator, validationResult } = require('express-validator');
+const cookieSession = require('cookie-session');
 
 
 // Load the database object
@@ -16,7 +19,15 @@ const PORT = 3000;
 // Communicate with the chaincode by create a hyperledgerApp object
 const hyperledgerApp = new HyperledgerApp();
 
+server.set('trust proxy', 1);
+
+server.use(cookieSession({
+    name: 'session',
+    keys: ['Jason238497mkasns', 'asdjasni673mes345'],
+}))
+
 server.use(express.static(__dirname + '/public'));
+
 // bodyParse setup
 server.use(bodyParser.urlencoded({extended: true}));
 server.use(bodyParser.json());
@@ -79,15 +90,61 @@ server.get('/getAllCerts', async (req, res) => {
     res.send(certs);
 })
 
-server.get('/createCert', async (req, res) => {
-    const { firstName, lastName, unitCode, grade, credit } = req.query;
+server.post(
+    '/createCert',
+    [
+        check(['firstName', 'lastName'])
+            .trim()
+            .isLength({min : 2})
+            .isAlpha()
+            .notEmpty()
+            .escape()
+            .withMessage('First and last name is required'),
+        check('unitCode')
+            .trim()
+            .isLength({min : 6}, {max : 6})
+            .isAlphanumeric()
+            .notEmpty()
+            .withMessage('6-character unit code is required'),
+        check('grade')
+            .trim()
+            .isInt({min : 0}, {max : 100})
+            .withMessage('Grade is required'),
+        check('credit')
+            .trim()
+            .isInt({min : 0}, {max : 5})
+            .withMessage('Credit point is required')
+    ], 
+async (req, res) => {
+    // console.log(req.body);
+    const errors = validationResult(req);
+    const result = {};
+
+    if (!errors.isEmpty()) {
+        req.session.createCert = {
+            errors : errors.array(),
+        };
+        result.error = 'Errors!';
+        return res.send(result);
+    }
+
+    const { firstName, lastName, unitCode, grade, credit } = req.body;
 
     const certId = produceCertId(firstName, lastName, unitCode);
 
     const owner = firstName + ' ' + lastName;
 
     await hyperledgerApp.CreateCert(certId, unitCode, grade, owner, credit);
-    res.send(certId);
+    result.certId = certId;
+    res.send(result);
+})
+
+server.get('/createCert', (req, res) => {
+    // console.log(req.session.createCert);
+    const errors = req.session.createCert ? req.session.createCert.errors : false;
+    req.session.createCert = {};
+
+    res.send(errors);
 })
 
 // produce the certId to be stored on the ledger
